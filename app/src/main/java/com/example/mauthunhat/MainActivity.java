@@ -1,10 +1,14 @@
 package com.example.mauthunhat;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,57 +26,57 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
-    public Database db = new Database(MainActivity.this);
+    public An_Sqlite db = new An_Sqlite(MainActivity.this);
     public ListView listView;
     public EditText editTextFilter;
     public FloatingActionButton actionButtonAdd;
-    public BaseAdapterK adapter;
-    public ArrayList<SanPham> arrayListObject = new ArrayList<>();
-    public ArrayList<SanPham> arrayListObjectDelete = new ArrayList<>();
+    public An_Adapter adapter;
+    public ArrayList<Product_181203458> arrayListObject = new ArrayList<>();
+    public ArrayList<Product_181203458> arrayListObjectDelete = new ArrayList<>();
     public long backPressTime;
     public Toast toast;
-    private VarFinal mVarFinal = new VarFinal();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle("Trang chủ");
         // Ánh xạ
         listView = findViewById(R.id.listView);
         editTextFilter = findViewById(R.id.editTextSearch);
         actionButtonAdd = findViewById(R.id.floatingActionButtonAdd);
         // Insert data
-        if (db.GetData("SELECT * FROM " + mVarFinal.TABLENAME).getCount() == 0) {
-            db.Insert(new SanPham(0, "Bóng đèn", "220V", "a", false));
-            db.Insert(new SanPham(0, "Máy bơm", "220V", "a", false));
-            db.Insert(new SanPham(0, "Quạt điện", "220V", "a", false));
-            db.Insert(new SanPham(0, "Tủ lạnh", "220V", "a", false));
-            db.Insert(new SanPham(0, "Điều hòa", "220V", "a", false));
-            db.Insert(new SanPham(0, "Tivi", "220V", "a", false));
-            db.Insert(new SanPham(0, "Nồi cơm điện", "220V", "a", false));
-            db.Insert(new SanPham(0, "Máy giặt", "220V", "a", false));
-            db.Insert(new SanPham(0, "Máy tính", "220V", "a", false));
+        if (db.GetData("SELECT * FROM " + db.TABLENAME).getCount() == 0) {
+            db.Insert(new Product_181203458(0, "Bóng đèn", "220V", "a", false));
+            db.Insert(new Product_181203458(1, "Máy bơm", "220V", "a", false));
+            db.Insert(new Product_181203458(2, "Quạt điện", "220V", "a", false));
+            db.Insert(new Product_181203458(3, "Tủ lạnh", "220V", "a", false));
+            db.Insert(new Product_181203458(4, "Điều hòa", "Nguyễn Văn An", "a", false));
+            db.Insert(new Product_181203458(5, "Tivi", "220V", "a", false));
         }
 
         // End Insert data
 
-        arrayListObject = selectAll(mVarFinal.TABLENAME);
+        arrayListObject = selectAll(db.TABLENAME);
         // Sort arrayList theo Giá (đảo vị trí (t1,t2) để đảo chiều sort)
         Collections.sort(arrayListObject, (t1, t2) -> t1.getName().compareTo(t2.getName()));
         // set Adapter
-        adapter = new BaseAdapterK(MainActivity.this, arrayListObject, new BaseAdapterK.onClick() {
+        adapter = new An_Adapter(MainActivity.this, arrayListObject, new An_Adapter.onClick() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
-            public void onClickItem(SanPham sp, Boolean isChecked) {
+            public void onClickItem(Product_181203458 obj, Boolean isChecked) {
                 if (isChecked) {
-                    arrayListObjectDelete.add(sp);
+                    arrayListObjectDelete.add(obj);
+//                    Toast.makeText(MainActivity.this, "true" + obj.getName(), Toast.LENGTH_SHORT).show();
                 } else {
-                    arrayListObjectDelete.remove(sp);
+                    arrayListObjectDelete.removeIf(ob -> (obj.getId().equals(ob.getId())));
+//                    Toast.makeText(MainActivity.this, "false" + obj.getName(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onClickEditItem(SanPham sp) {
-                intentView(sp.getId(), AddObjectActivity.class, "katoit", 1);
+            public void onClickEditItem(Product_181203458 obj) {
+                intentView(obj.getId(), AddObjectActivity.class, "katoit", 1);
             }
         });
         listView.setAdapter(adapter);
@@ -116,20 +120,38 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_xoa: {
-                for (SanPham sp : arrayListObjectDelete) {
-                    db.Delete(sp);
-                    arrayListObject.remove(sp);
-                    adapter.notifyDataSetChanged();
-                }
+                // chọn item 'Xóa'
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Cảnh báo xóa");
+                builder.setMessage("Nguyen Van An wants to delete?");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Sự kiện click nút 'Có'
+                        for (Product_181203458 sp : arrayListObjectDelete) {
+                            db.Delete(sp);
+                            arrayListObject.remove(sp);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // sự kiện nút 'Không'
+                    }
+                });
+                builder.create();// tạo dialog
+                builder.show(); // show dialog
                 break;
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public ArrayList<SanPham> selectAll(String tableName) {
+    public ArrayList<Product_181203458> selectAll(String tableName) {
         // Select data SQLite
-        ArrayList<SanPham> arrayList = new ArrayList<>();
+        ArrayList<Product_181203458> arrayList = new ArrayList<>();
         Cursor cursor = db.GetData("SELECT * FROM " + tableName + "");
         while (cursor.moveToNext()) {
             int col0 = Integer.parseInt(cursor.getString(0));
@@ -137,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             String col2 = cursor.getString(2);
             String col3 = cursor.getString(3);
             boolean col4 = Boolean.valueOf(cursor.getString(4));
-            arrayList.add(new SanPham(col0, col1, col2, col3, col4));
+            arrayList.add(new Product_181203458(col0, col1, col2, col3, col4));
         }
         return arrayList;
     }

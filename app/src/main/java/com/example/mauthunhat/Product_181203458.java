@@ -1,15 +1,13 @@
 package com.example.mauthunhat;
 
-public class SanPham {
-    private VarFinal mVarFinal = new VarFinal();
+public class Product_181203458 {
     private Integer Id;
     private String Name;
     private String Description;
     private String Image;
     private boolean Status;
 
-    public SanPham(Integer id, String name, String description, String image, boolean status) {
-        this.mVarFinal = mVarFinal;
+    public Product_181203458(Integer id, String name, String description, String image, boolean status) {
         Id = id;
         Name = name;
         Description = description;

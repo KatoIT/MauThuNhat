@@ -16,22 +16,24 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
 
-public class BaseAdapterK extends BaseAdapter implements Filterable {
-    private Context context; //context
-    private ArrayList<SanPham> arrayListObject; //data source of the list adapter
+public class An_Adapter extends BaseAdapter implements Filterable {
+    private Context mContext; //context
+    private ArrayList<Product_181203458> arrayListObject; //data source of the list adapter
 
     private CustomFilter filter;
-    private ArrayList<SanPham> filterList;
+    private ArrayList<Product_181203458> filterList;
+    private An_Sqlite db = new An_Sqlite(mContext);
+
     onClick mOnClick;
 
     public interface onClick {
-        public void onClickItem(SanPham sp, Boolean isChecked);
+        public void onClickItem(Product_181203458 obj, Boolean isChecked);
 
-        public void onClickEditItem(SanPham sp);
+        public void onClickEditItem(Product_181203458 obj);
     }
 
-    public BaseAdapterK(Context context, ArrayList<SanPham> arrayListObject, onClick mOnClick) {
-        this.context = context;
+    public An_Adapter(Context context, ArrayList<Product_181203458> arrayListObject, onClick mOnClick) {
+        this.mContext = context;
         this.arrayListObject = arrayListObject;
         this.filterList = arrayListObject;
         this.mOnClick = mOnClick;
@@ -43,7 +45,7 @@ public class BaseAdapterK extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public SanPham getItem(int position) {
+    public Product_181203458 getItem(int position) {
         return arrayListObject.get(position);
     }
 
@@ -52,7 +54,7 @@ public class BaseAdapterK extends BaseAdapter implements Filterable {
         return position;
     }
 
-    public void update(ArrayList<SanPham> lUser) {
+    public void update(ArrayList<Product_181203458> lUser) {
         this.arrayListObject = lUser;
         notifyDataSetChanged();
     }
@@ -62,10 +64,10 @@ public class BaseAdapterK extends BaseAdapter implements Filterable {
 
         View view = convertView;
         if (view == null) {
-            LayoutInflater inflater = LayoutInflater.from(context);
+            LayoutInflater inflater = LayoutInflater.from(mContext);
             view = inflater.inflate(R.layout.item_list_view, null);
         }
-        SanPham object = (SanPham) getItem(position);
+        Product_181203458 object = (Product_181203458) getItem(position);
         if (object != null) {
             // Ánh xạ
             TextView textView1 = view.findViewById(R.id.textView1);
@@ -81,20 +83,24 @@ public class BaseAdapterK extends BaseAdapter implements Filterable {
             constraintLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mOnClick.onClickItem(object, !checkBox.isChecked());
                     checkBox.setChecked(!checkBox.isChecked());
-                }
-            });
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mOnClick.onClickEditItem(object);
+                    mOnClick.onClickItem(object, checkBox.isChecked());
+                    object.setStatus(checkBox.isChecked());
+//                    db.Update(object);
                 }
             });
             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     mOnClick.onClickItem(object, isChecked);
+                    object.setStatus(isChecked);
+//                    db.Update(object);
+                }
+            });
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnClick.onClickEditItem(object);
                 }
             });
 
@@ -142,12 +148,12 @@ public class BaseAdapterK extends BaseAdapter implements Filterable {
             FilterResults results = new FilterResults();
             if (constraint != null && constraint.length() > 0) {
                 constraint = constraint.toString().toUpperCase();
-                ArrayList<SanPham> arrayList = new ArrayList<>();
+                ArrayList<Product_181203458> arrayList = new ArrayList<>();
                 for (int i = 0; i < filterList.size(); i++) {
                     // search theo filterList.get(i).getTenSP() -------------------------------
                     if (filterList.get(i).getName().toUpperCase().contains(constraint)) {
                         // chú ý -----------------------------------------
-                        SanPham object = new SanPham(filterList.get(i).getId(), filterList.get(i).getName(), filterList.get(i).getDescription(), filterList.get(i).getImage(), filterList.get(i).isStatus());
+                        Product_181203458 object = new Product_181203458(filterList.get(i).getId(), filterList.get(i).getName(), filterList.get(i).getDescription(), filterList.get(i).getImage(), filterList.get(i).isStatus());
                         //
                         arrayList.add(object);
                     }
@@ -163,14 +169,14 @@ public class BaseAdapterK extends BaseAdapter implements Filterable {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            arrayListObject = (ArrayList<SanPham>) results.values;
+            arrayListObject = (ArrayList<Product_181203458>) results.values;
             notifyDataSetChanged();
         }
 
 
     }
 
-    public void updateResults(ArrayList<SanPham> results) {
+    public void updateResults(ArrayList<Product_181203458> results) {
         arrayListObject = results;
         notifyDataSetChanged();
     }

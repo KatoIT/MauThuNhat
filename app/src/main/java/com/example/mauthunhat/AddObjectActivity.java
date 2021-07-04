@@ -2,6 +2,7 @@ package com.example.mauthunhat;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -15,22 +16,23 @@ public class AddObjectActivity extends AppCompatActivity {
     private EditText editTextA, editTextA2, editTextB;
     private Button buttonThem;
     private RadioButton radioButton1, radioButton2;
-    private SanPham mSanPham;
-    private Database database = new Database(AddObjectActivity.this);
-    private VarFinal mVarFinal = new VarFinal();
+    private Product_181203458 mSanPham;
+    private An_Sqlite db = new An_Sqlite(AddObjectActivity.this);
     private int id;
     private Boolean col4;
     private String col1, col2, col3;
     private boolean isSuccessful = false;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_object);
+
         // Ánh xạ
-        editTextA = findViewById(R.id.editTextA);
-        editTextA2 = findViewById(R.id.editTextA2);
-        editTextB = findViewById(R.id.editTextB);
+        editTextA = findViewById(R.id.editText1);
+        editTextA2 = findViewById(R.id.editText2);
+        editTextB = findViewById(R.id.editText3);
         radioButton1 = findViewById(R.id.radioButton1);
         radioButton2 = findViewById(R.id.radioButton2);
         buttonThem = findViewById(R.id.buttonThem);
@@ -42,20 +44,19 @@ public class AddObjectActivity extends AppCompatActivity {
         // Xử lý
         if (isEdit == 1) {
             buttonThem.setText("Cập nhật");
-            Cursor cursor = database.GetData("SELECT * FROM " + mVarFinal.TABLENAME + " WHERE Id = " + id + ";");
+            getSupportActionBar().setTitle("Chỉnh sửa");
+            Cursor cursor = db.GetData("SELECT * FROM " + db.TABLENAME + " WHERE Id = " + id + ";");
             cursor.moveToFirst();
-            col1 = cursor.getString(1);
-            col2 = cursor.getString(2);
-            col3 = cursor.getString(3);
             col4 = Boolean.valueOf(cursor.getString(4));
             // set Text cho EditText
-            editTextA.setText(col1);
-            editTextA2.setText(col2);
-            editTextB.setText(col3);
+            editTextA.setText(cursor.getString(1));
+            editTextA2.setText(cursor.getString(2));
+            editTextB.setText(cursor.getString(3));
             radioButton1.setChecked(col4);
             radioButton2.setChecked(!col4);
         } else {
             buttonThem.setText("Thêm");
+            getSupportActionBar().setTitle("Thêm mới");
         }
         buttonThem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,11 +66,11 @@ public class AddObjectActivity extends AppCompatActivity {
                     return;
                 }
                 if (isEdit == 1) {
-                    database.Update(mSanPham);
+                    db.Update(mSanPham);
                     isSuccessful = true;
                 } else {
                     try {
-                        database.Insert(mSanPham);
+                        db.Insert(mSanPham);
                         isSuccessful = true;
                     } catch (Exception e) {
                         Toast.makeText(AddObjectActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -95,7 +96,7 @@ public class AddObjectActivity extends AppCompatActivity {
         if (col1.isEmpty() || col2.isEmpty() || col3.isEmpty()) {
             return false;
         } else {
-            mSanPham = new SanPham(id, col1, col2, col3, col4);
+            mSanPham = new Product_181203458(id, col1, col2, col3, col4);
             return true;
         }
     }
