@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 public class AddObjectActivity extends AppCompatActivity {
     private EditText editTextA, editTextA2, editTextB;
-    private Button buttonThem;
+    private Button buttonThem, buttonBack;
     private RadioButton radioButton1, radioButton2;
     private Product_181203458 mSanPham;
     private An_Sqlite db = new An_Sqlite(AddObjectActivity.this);
@@ -36,6 +36,7 @@ public class AddObjectActivity extends AppCompatActivity {
         radioButton1 = findViewById(R.id.radioButton1);
         radioButton2 = findViewById(R.id.radioButton2);
         buttonThem = findViewById(R.id.buttonThem);
+        buttonBack = findViewById(R.id.buttonBack);
         // Khai báo
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("katoit");
@@ -55,7 +56,7 @@ public class AddObjectActivity extends AppCompatActivity {
             radioButton1.setChecked(col4);
             radioButton2.setChecked(!col4);
         } else {
-            buttonThem.setText("Thêm");
+            buttonThem.setText("Add");
             getSupportActionBar().setTitle("Thêm mới");
         }
         buttonThem.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +86,12 @@ public class AddObjectActivity extends AppCompatActivity {
             }
         });
 
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
     }
 

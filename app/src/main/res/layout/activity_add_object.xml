@@ -109,7 +109,7 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/custome_button"
-        android:text="Thêm"
+        android:text="Add"
         android:textAllCaps="false"
         android:textColor="@color/blue"
         app:layout_constraintEnd_toStartOf="@+id/buttonBack"
